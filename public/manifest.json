@@ -2,7 +2,7 @@
   "name": "My Extension",
   "version": "1.0",
   "manifest_version": 2,
-  "permissions": ["declarativeContent", "activeTab"],
+  "permissions": ["declarativeContent", "activeTab", "downloads"],
   "page_action": {
     "default_popup": "index.html",
     "default_icon": {
@@ -20,6 +20,6 @@
   },
   "content_scripts": [{
     "matches": ["https://sdb.admin.uw.edu/students/uwnetid/register.asp"],
-    "js": ["content.js"]
+    "js": ["ics.deps.min.js", "content.js"]
   }]
 }

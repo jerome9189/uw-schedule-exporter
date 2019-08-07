@@ -1,25 +1,13 @@
-// chrome.runtime.onMessage.addListener(
-//     function (message, callback) {
-//         if (message["text"] == "requestTable") {
-//             chrome.runtime.sendMessage(undefined, { text:  }, undefined, function () {
-//                 console.log("message sent");
-//             })
-//         }
-//     }
-// );
-
+console.log("pre");
 chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
-        if (request["request"] == "table") {
+    function (request, sender, sendResponse) {
+        if (request["header"] == "table") {
             sendResponse({ table: document.getElementsByClassName("sps_table")[0].outerHTML });
         }
+        else if (request["header"] == "download") {
+            let cal = ics();
+            cal.addEvent("subject", "description", "location", "August 18, 2019 03:24:00", "August 19, 2019 04:24:00");
+            cal.download("yeets");
+        }
     });
-
-// for (var x of document.getElementsByClassName("sps_table")[0].getElementsByTagName("tr")) {
-
-//     chrome.runtime.sendMessage(undefined, {text: x.innerHTML}, undefined, function() {
-//         // alert("message sent");
-//     })
-// }
-
-// document.getElementsByClassName("sps_table")[0].outerHTML
+console.log("post");
