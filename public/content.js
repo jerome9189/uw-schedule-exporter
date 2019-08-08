@@ -5,9 +5,20 @@ chrome.runtime.onMessage.addListener(
             sendResponse({ table: document.getElementsByClassName("sps_table")[0].outerHTML });
         }
         else if (request["header"] == "download") {
+            console.log("generating calendar");
             let cal = ics();
-            cal.addEvent("subject", "description", "location", "August 18, 2019 03:24:00", "August 19, 2019 04:24:00");
-            cal.download("yeets");
+            for (var event of request["events"]) {
+                var subject = event.subject.trim();
+                var description = event.description.trim();
+                var location = event.location.trim();
+                var beginDate = event.beginDate.toString();
+                var endDate = event.endDate.toString();
+                var rrule = event.rrule;
+                cal.addEvent(subject, description, location, beginDate, endDate, rrule);
+            }
+            
+            cal.download("res");
+            // console.log(request["events"]);
         }
     });
 console.log("post");
