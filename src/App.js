@@ -191,7 +191,7 @@ function App() {
   function getStartDateOffset(weekdays) {
     var instructionBeginsWeekdayNumber = new Date(INSTRUCTION_BEGINS.year, INSTRUCTION_BEGINS.month, INSTRUCTION_BEGINS.day).getDay();
     var offset = 0;
-    while (weekdays.indexOf(DAY_SEQUENCE[instructionBeginsWeekdayNumber + offset]) == -1) {
+    while (weekdays.indexOf(DAY_SEQUENCE[(instructionBeginsWeekdayNumber + offset) % DAY_SEQUENCE.length]) == -1) {
       offset++;
     }
 
