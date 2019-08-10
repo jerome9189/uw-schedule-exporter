@@ -20,6 +20,6 @@
   },
   "content_scripts": [{
     "matches": ["https://sdb.admin.uw.edu/students/uwnetid/register.asp"],
-    "js": ["ics.deps.min.js", "content.js"]
+    "js": ["ics.deps.min.js", "content-script.js"]
   }]
 }

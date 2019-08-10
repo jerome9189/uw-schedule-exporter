@@ -1,4 +1,3 @@
-console.log("pre");
 chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
         if (request["header"] == "table") {
@@ -18,7 +17,5 @@ chrome.runtime.onMessage.addListener(
             }
             
             cal.download("res");
-            // console.log(request["events"]);
         }
     });
-console.log("post");
