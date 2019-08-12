@@ -1,9 +1,10 @@
 /*global chrome*/
 import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
+import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/styles';
 import './App.css';
 
-Date.prototype.addDays = function(days) {
+Date.prototype.addDays = function (days) {
   var date = new Date(this.valueOf());
   date.setDate(date.getDate() + days);
   return date;
@@ -74,11 +75,6 @@ function App() {
     return div.firstChild;
   }
 
-  function htmlDecode(input) {
-    var doc = new DOMParser().parseFromString(input, "text/html");
-    return doc.documentElement.textContent;
-  }
-
   /**
    * Reads the table rows from the tableHTML string and converts them into
    * objects with keys mentioned in COURSE_PROPERTY_INDICES
@@ -125,7 +121,7 @@ function App() {
     for (let i = 0; i < splitDays.length; i++) {
       let letter = splitDays[i];
       if (letter in dayMap) {
-        if (letter == "T" && i + 1 < splitDays.length && splitDays[i + 1] == "h") {
+        if (letter === "T" && i + 1 < splitDays.length && splitDays[i + 1] === "h") {
           letter = "Th";
           i++;
         }
@@ -167,7 +163,7 @@ function App() {
     var pmInString = timeString.includes("PM");
     timeString = timeString.replace("PM", "").trim();
     var splitTimeString = timeString.split("-").map(x => x.trim());
-    if (splitTimeString.length != 2) {
+    if (splitTimeString.length !== 2) {
       console.error("incorrect time string: " + timeString);
       return null;
     } else {
@@ -191,7 +187,7 @@ function App() {
   function getStartDateOffset(weekdays) {
     var instructionBeginsWeekdayNumber = new Date(INSTRUCTION_BEGINS.year, INSTRUCTION_BEGINS.month, INSTRUCTION_BEGINS.day).getDay();
     var offset = 0;
-    while (weekdays.indexOf(DAY_SEQUENCE[(instructionBeginsWeekdayNumber + offset) % DAY_SEQUENCE.length]) == -1) {
+    while (weekdays.indexOf(DAY_SEQUENCE[(instructionBeginsWeekdayNumber + offset) % DAY_SEQUENCE.length]) === -1) {
       offset++;
     }
 
@@ -211,11 +207,11 @@ function App() {
         let parsedDayRows = tableRow["days"].split("\n").map(dayString => parseDaysRow(dayString.trim()));
         let parsedTimeRows = tableRow["time"].split("\n").map(timeString => parseTimeRow(timeString.trim()));
         let parsedLocationRows = tableRow["location"].split("\n").map(locationString => locationString.trim());
-        if (parsedLocationRows.length != parsedDayRows.length) {
+        if (parsedLocationRows.length !== parsedDayRows.length) {
           console.error("day and location count mismatch for the following row: " + tableRow);
           return null;
         }
-        if (parsedDayRows.length != parsedTimeRows.length) {
+        if (parsedDayRows.length !== parsedTimeRows.length) {
           console.error("day and row count mismatch for the following row: " + tableRow);
           return null;
         } else {
@@ -229,9 +225,9 @@ function App() {
             let event = {
               subject: tableRow["course"], description: tableRow["title"] + "(" + tableRow["type"].trim() + ")", location: tableRow["location"],
               beginDate: (new Date(beginDateTempObject.year, beginDateTempObject.month, beginDateTempObject.day,
-                 beginDateTempObject.hour, beginDateTempObject.minute)).addDays(startDateOffset),
+                beginDateTempObject.hour, beginDateTempObject.minute)).addDays(startDateOffset),
               endDate: new Date(endDateTempObject.year, endDateTempObject.month, endDateTempObject.day, endDateTempObject.hour, endDateTempObject.minute),
-              rrule: { freq: "WEEKLY", until: LAST_DAY_OF_INSTRUCTION, interval: 1, byday: parsedDayRows[i] }
+              rrule: { freq: "WEEKLY", until: LAST_DAY_OF_INSTRUCTION, interval: 1, byday: parsedDayRows[i] }, uidHelper: (tableRow["sln"] + "_" + i)
             };
             eventList.push(event);
           }
@@ -253,13 +249,30 @@ function App() {
 
   useEffect(() => {
     getTable();
-  }, [])
+  }, []);
+
+  const useStyles = makeStyles({
+    submit: {
+      background: '#b7a57a',
+      border: 0,
+      margin: '20px',
+      borderRadius: 3,
+      color: 'white',
+      height: 48,
+      padding: '0 30px',
+      '&:hover': {
+        background: "#85754d",
+      },
+    },
+  });
+
+  const classes = useStyles();
 
   return (
-    <div className="App" style={{ height: "400px", width: "200px" }}>
-      <header className="App-header">
-        <img src={logo} onClick={sendEvents} className="App-logo" alt="logo" />
-      </header>
+    <div className="App" style={{ maxHeight: "500px", width: "300px" }}>
+      <Button className={classes.submit} onClick={sendEvents} variant="contained" color="primary">
+        Download .ics file
+      </Button>
     </div>
   );
 }

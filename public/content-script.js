@@ -5,7 +5,7 @@ chrome.runtime.onMessage.addListener(
         }
         else if (request["header"] == "download") {
             console.log("generating calendar");
-            let cal = ics();
+            let cal = ics("uw-schedule-exporter");
             for (var event of request["events"]) {
                 var subject = event.subject.trim();
                 var description = event.description.trim();
@@ -13,9 +13,10 @@ chrome.runtime.onMessage.addListener(
                 var beginDate = event.beginDate.toString();
                 var endDate = event.endDate.toString();
                 var rrule = event.rrule;
-                cal.addEvent(subject, description, location, beginDate, endDate, rrule);
+                var uidHelper = event.uidHelper;
+                cal.addEvent(subject, description, location, beginDate, endDate, rrule, uidHelper);
             }
             
-            cal.download("res");
+            cal.download("uw-schedule");
         }
     });
