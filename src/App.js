@@ -1,6 +1,12 @@
 /*global chrome*/
 import React, { useState, useEffect } from 'react';
 import Button from '@material-ui/core/Button';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/styles';
 import './App.css';
 
@@ -78,7 +84,7 @@ function App() {
   /**
    * Reads the table rows from the tableHTML string and converts them into
    * objects with keys mentioned in COURSE_PROPERTY_INDICES
-   * @param {} tableHTML html string of the table element being parsed
+   * @param tableHTML html string of the table element being parsed
    */
   function readTable(tableHTML) {
     var table = createElementFromHTML(tableHTML);
@@ -252,27 +258,80 @@ function App() {
   }, []);
 
   const useStyles = makeStyles({
-    submit: {
+    table: {
+      height: '300px',
+      overflowY: 'auto'
+    },
+    tableHeader: {
+      backgroundColor: '#b7a57a',
+      fontSize: '1rem',
+      color: 'white',
+      position: "sticky",
+      top: 0,
+      zIndex: 10,
+      whiteSpace: "nowrap",
+      overflow: "hidden"
+    },
+    tableBody: {
+      overflowY: 'auto'
+    },
+    buttonContainer: {
+      textAlign: 'center'
+    },
+    button: {
       background: '#b7a57a',
+      width: '80%',
       border: 0,
       margin: '20px',
       borderRadius: 3,
       color: 'white',
-      height: 48,
+      height: '45px',
       padding: '0 30px',
       '&:hover': {
         background: "#85754d",
       },
     },
+    tableRow: {
+      whiteSpace: "nowrap",
+      overflow: "hidden"
+    }
   });
 
   const classes = useStyles();
 
+  function onRenderEvents() {
+    return events.map(event => <TableRow>
+      <TableCell className={classes.tableRow}>{event["subject"]}</TableCell>
+      <TableCell className={classes.tableRow} align="right">{event['rrule'].byday.join(', ')}</TableCell>
+      <TableCell className={classes.tableRow} align="right">{event['beginDate'].getHours() + ':' + event['beginDate'].getMinutes()}</TableCell>
+      <TableCell className={classes.tableRow} align="right">{event['endDate'].getHours() + ':' + event['endDate'].getMinutes()}</TableCell>
+      <TableCell className={classes.tableRow} align="right">{event["location"]}</TableCell>
+    </TableRow>)
+  }
+
   return (
-    <div className="App" style={{ maxHeight: "500px", width: "300px" }}>
-      <Button className={classes.submit} onClick={sendEvents} variant="contained" color="primary">
-        Download .ics file
+    <div className={classes.App}>
+      <div className={classes.table}>
+        <Table>
+          <TableHead >
+            <TableRow>
+              <TableCell className={classes.tableHeader}>Course</TableCell>
+              <TableCell className={classes.tableHeader} align="right">Days</TableCell>
+              <TableCell className={classes.tableHeader} align="right">Start Time</TableCell>
+              <TableCell className={classes.tableHeader} align="right">End Time</TableCell>
+              <TableCell className={classes.tableHeader} align="right">Location</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody className={classes.tableBody}>
+            {onRenderEvents()}
+          </TableBody>
+        </Table>
+      </div>
+      <div className={classes.buttonContainer}>
+        <Button className={classes.button} onClick={sendEvents} variant="contained" color="primary">
+          Download .ics file
       </Button>
+      </div>
     </div>
   );
 }
