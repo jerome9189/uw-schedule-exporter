@@ -1,7 +1,10 @@
 chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
         if (request["header"] == "table") {
-            sendResponse({ table: document.getElementsByClassName("sps_table")[0].outerHTML });
+            sendResponse({
+                table: document.getElementsByClassName("sps_table")[0].outerHTML,
+                quarter: document.getElementsByTagName("h1")[0].innerHTML
+            });
         }
         else if (request["header"] == "download") {
             console.log("generating calendar");
@@ -16,7 +19,7 @@ chrome.runtime.onMessage.addListener(
                 var uidHelper = event.uidHelper;
                 cal.addEvent(subject, description, location, beginDate, endDate, rrule, uidHelper);
             }
-            
+
             cal.download("uw-schedule");
         }
     });

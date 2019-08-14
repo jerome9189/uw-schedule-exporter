@@ -17,13 +17,26 @@ Date.prototype.addDays = function (days) {
 }
 
 /**
- * Start and end dates of Autumn 2019
+ * Start and end dates
  */
-const INSTRUCTION_BEGINS = { year: 2019, month: 8, day: 25, hour: 8, minute: 0 };
-const LAST_DAY_OF_INSTRUCTION = new Date(2019, 11, 6, 23, 59);
-
-const EARLIEST_START_TIME_MINUTES = 60 * 8 + 30;
-const TWELVE_HOURS_IN_MINUTES = 60 * 12;
+const QUARTER_DATES = {
+  'Autumn 2019': {
+    instructionBegins: { year: 2019, month: 8, day: 25, hour: 8, minute: 0 },
+    instructionEnds: { year: 2019, month: 11, day: 6, hour: 23, minute: 59 }
+  },
+  'Fall 2019': {
+    instructionBegins: { year: 2019, month: 8, day: 25, hour: 8, minute: 0 },
+    instructionEnds: { year: 2019, month: 11, day: 6, hour: 23, minute: 59 }
+  },
+  'Winter 2020': {
+    instructionBegins: { year: 2020, month: 0, day: 6, hour: 8, minute: 0 },
+    instructionEnds: { year: 2020, month: 2, day: 13, hour: 23, minute: 59 }
+  },
+  'Spring 2020': {
+    instructionBegins: { year: 2020, month: 2, day: 30, hour: 8, minute: 0 },
+    instructionEnds: { year: 2020, month: 5, day: 5, hour: 23, minute: 59 }
+  }
+};
 
 /**
  * Map of registration page day symbols to ics spec (excluding Saturday and
@@ -72,6 +85,8 @@ const skippableFooterRows = 2;
 
 function App() {
   const [events, setEvents] = useState([]);
+  var instructionBegins = {};
+  var instructionEnds = {};
 
   function createElementFromHTML(htmlString) {
     var div = document.createElement('div');
@@ -109,6 +124,9 @@ function App() {
   function getTable() {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       chrome.tabs.sendMessage(tabs[0].id, { header: "table" }, undefined, function (response) {
+        var quarterName = response["quarter"].split("-")[1].trim();
+        instructionBegins = QUARTER_DATES[quarterName].instructionBegins;
+        instructionEnds = QUARTER_DATES[quarterName].instructionEnds;
         populateEvents(readTable(response["table"]));
       });
     });
@@ -146,14 +164,14 @@ function App() {
    * notation, with the last two characters representing the minute past the hour, and the
    * remaining characters representing the hour, e.g., "830" or "1430"
    */
-  function getMinute(timeString) {
+  function getHourAndMinute(timeString) {
     if (timeString.length > 4) {
       console.error("time string longer than 4 characters: " + timeString);
       return null;
     } else {
       var hour = parseInt(timeString.substring(0, timeString.length - 2));
       var minute = parseInt(timeString.substring((hour + "").length));
-      return 60 * hour + minute;
+      return { hour: hour, minute: minute };
     }
   }
 
@@ -173,15 +191,22 @@ function App() {
       console.error("incorrect time string: " + timeString);
       return null;
     } else {
-      var startMinute = getMinute(splitTimeString[0]);
-      var endMinute = getMinute(splitTimeString[1]);
+      var startHourMinute = getHourAndMinute(splitTimeString[0]);
+      var endHourMinute = getHourAndMinute(splitTimeString[1]);
 
-      // assume that the time is in PM if true
-      if (startMinute < EARLIEST_START_TIME_MINUTES || pmInString) {
-        startMinute += TWELVE_HOURS_IN_MINUTES;
-        endMinute += TWELVE_HOURS_IN_MINUTES;
+      if (pmInString || startHourMinute['hour'] < 8) {
+        startHourMinute['hour'] += 12;
+        endHourMinute['hour'] += 12;
+      } else if (endHourMinute['hour'] < 8) {
+        endHourMinute['hour'] += 12;
       }
-      return { startTime: { hour: startMinute / 60, minute: startMinute % 60 }, endTime: { hour: endMinute / 60, minute: endMinute % 60 } };
+
+      // // assume that the time is in PM if true
+      // if (startMinute < EARLIEST_START_TIME_MINUTES || pmInString) {
+      //   startMinute += TWELVE_HOURS_IN_MINUTES;
+      //   endMinute += TWELVE_HOURS_IN_MINUTES;
+      // }
+      return { startTime: startHourMinute, endTime: endHourMinute };
     }
   }
 
@@ -191,7 +216,7 @@ function App() {
    * @param {*} weekdays a non-empty array containing ics-style days
    */
   function getStartDateOffset(weekdays) {
-    var instructionBeginsWeekdayNumber = new Date(INSTRUCTION_BEGINS.year, INSTRUCTION_BEGINS.month, INSTRUCTION_BEGINS.day).getDay();
+    var instructionBeginsWeekdayNumber = new Date(instructionBegins.year, instructionBegins.month, instructionBegins.day).getDay();
     var offset = 0;
     while (weekdays.indexOf(DAY_SEQUENCE[(instructionBeginsWeekdayNumber + offset) % DAY_SEQUENCE.length]) === -1) {
       offset++;
@@ -224,17 +249,23 @@ function App() {
           for (var i = 0; i < parsedDayRows.length; i++) {
             var beginTime = parsedTimeRows[i].startTime;
             var endTime = parsedTimeRows[i].endTime;
-            var beginDateTempObject = { ...INSTRUCTION_BEGINS, hour: beginTime.hour, minute: beginTime.minute };
-            var endDateTempObject = { ...INSTRUCTION_BEGINS, hour: endTime.hour, minute: endTime.minute };
+            var beginDateTempObject = { ...instructionBegins, hour: beginTime.hour, minute: beginTime.minute };
+            var endDateTempObject = { ...instructionBegins, hour: endTime.hour, minute: endTime.minute };
             var startDateOffset = getStartDateOffset(parsedDayRows[i]);
 
             let event = {
-              subject: tableRow["course"], description: tableRow["title"] + "(" + tableRow["type"].trim() + ")", location: tableRow["location"],
+              subject: tableRow["course"], description: tableRow["title"] + "(" + tableRow["type"].trim() + ")",
+              location: tableRow["location"],
               beginDate: (new Date(beginDateTempObject.year, beginDateTempObject.month, beginDateTempObject.day,
                 beginDateTempObject.hour, beginDateTempObject.minute)).addDays(startDateOffset),
               endDate: new Date(endDateTempObject.year, endDateTempObject.month, endDateTempObject.day, endDateTempObject.hour, endDateTempObject.minute),
-              rrule: { freq: "WEEKLY", until: LAST_DAY_OF_INSTRUCTION, interval: 1, byday: parsedDayRows[i] }, uidHelper: (tableRow["sln"] + "_" + i)
+              rrule: {
+                freq: "WEEKLY", until: new Date(instructionEnds.year, instructionEnds.month, instructionEnds.day, instructionEnds.hour, instructionEnds.minute),
+                interval: 1, byday: parsedDayRows[i]
+              },
+              uidHelper: (tableRow["sln"] + "_" + i)
             };
+            console.log(event);
             eventList.push(event);
           }
         }
@@ -330,7 +361,7 @@ function App() {
       <div className={classes.buttonContainer}>
         <Button className={classes.button} onClick={sendEvents} variant="contained" color="primary">
           Download .ics file
-      </Button>
+        </Button>
       </div>
     </div>
   );
