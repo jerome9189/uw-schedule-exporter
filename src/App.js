@@ -254,8 +254,8 @@ function App() {
             var startDateOffset = getStartDateOffset(parsedDayRows[i]);
 
             let event = {
-              subject: tableRow["course"], description: tableRow["title"] + "(" + tableRow["type"].trim() + ")",
-              location: tableRow["location"],
+              subject: tableRow["course"], description: tableRow["title"] + " (" + tableRow["type"].trim() + ")",
+              location: parsedLocationRows[i],
               beginDate: (new Date(beginDateTempObject.year, beginDateTempObject.month, beginDateTempObject.day,
                 beginDateTempObject.hour, beginDateTempObject.minute)).addDays(startDateOffset),
               endDate: new Date(endDateTempObject.year, endDateTempObject.month, endDateTempObject.day, endDateTempObject.hour, endDateTempObject.minute),
@@ -290,12 +290,12 @@ function App() {
 
   const useStyles = makeStyles({
     table: {
-      height: '300px',
+      height: '100%',
+      width: '100%',
       overflowY: 'auto'
     },
     tableHeader: {
       backgroundColor: '#b7a57a',
-      fontSize: '1rem',
       color: 'white',
       position: "sticky",
       top: 0,
@@ -324,7 +324,7 @@ function App() {
     },
     tableRow: {
       whiteSpace: "nowrap",
-      overflow: "hidden"
+      overflow: "hidden",
     }
   });
 
@@ -341,7 +341,7 @@ function App() {
   }
 
   return (
-    <div className={classes.App}>
+    <div>
       <div className={classes.table}>
         <Table>
           <TableHead >
