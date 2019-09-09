@@ -251,14 +251,14 @@ function App() {
             var endTime = parsedTimeRows[i].endTime;
             var beginDateTempObject = { ...instructionBegins, hour: beginTime.hour, minute: beginTime.minute };
             var endDateTempObject = { ...instructionBegins, hour: endTime.hour, minute: endTime.minute };
-            var startDateOffset = getStartDateOffset(parsedDayRows[i]);
+            var dateOffset = getStartDateOffset(parsedDayRows[i]);
 
             let event = {
               subject: tableRow["course"], description: tableRow["title"] + " (" + tableRow["type"].trim() + ")",
               location: parsedLocationRows[i],
               beginDate: (new Date(beginDateTempObject.year, beginDateTempObject.month, beginDateTempObject.day,
-                beginDateTempObject.hour, beginDateTempObject.minute)).addDays(startDateOffset),
-              endDate: new Date(endDateTempObject.year, endDateTempObject.month, endDateTempObject.day, endDateTempObject.hour, endDateTempObject.minute),
+                beginDateTempObject.hour, beginDateTempObject.minute)).addDays(dateOffset),
+              endDate: new Date(endDateTempObject.year, endDateTempObject.month, endDateTempObject.day, endDateTempObject.hour, endDateTempObject.minute).addDays(dateOffset),
               rrule: {
                 freq: "WEEKLY", until: new Date(instructionEnds.year, instructionEnds.month, instructionEnds.day, instructionEnds.hour, instructionEnds.minute),
                 interval: 1, byday: parsedDayRows[i]
