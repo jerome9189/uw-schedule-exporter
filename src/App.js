@@ -184,8 +184,8 @@ function App() {
    * @param timeString a string with two times separated by a "-"
    */
   function parseTimeRow(timeString) {
-    var pmInString = timeString.includes("PM");
-    timeString = timeString.replace("PM", "").trim();
+    var pmInString = timeString.includes("P") || timeString.includes("PM");
+    timeString = timeString.replace("PM", "").replace("P", "").trim();
     var splitTimeString = timeString.split("-").map(x => x.trim());
     if (splitTimeString.length !== 2) {
       console.error("incorrect time string: " + timeString);
