@@ -6,10 +6,10 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/styles';
 import './App.css';
 
+// eslint-disable-next-line
 Date.prototype.addDays = function (days) {
   var date = new Date(this.valueOf());
   date.setDate(date.getDate() + days);
@@ -102,18 +102,23 @@ function App() {
    * @param tableHTML html string of the table element being parsed
    */
   function readTable(tableHTML) {
+    console.log("reading table")
     var table = createElementFromHTML(tableHTML);
     var rows = table.getElementsByTagName("tr");
     var parsedRowList = [];
     for (var i = skippableHeaderRows; i < rows.length - skippableFooterRows; i++) {
       var columnsThisRow = rows[i].getElementsByTagName("td");
       var parsedRow = {};
+
+      // Added to account for the "Drop Code" column in certain schedule tables
+      var dropCodeColumnOffset = columnsThisRow.length > 11 ? 1 : 0;
+
       for (var j in COURSE_PROPERTY_INDICES) {
-        parsedRow[COURSE_PROPERTY_INDICES[j]] = (columnsThisRow[j]) ? createElementFromHTML(columnsThisRow[j].innerHTML.replace("<br>", "\n")).innerText.trim() : null;
+        parsedRow[COURSE_PROPERTY_INDICES[j]] = (columnsThisRow[parseInt(j) + dropCodeColumnOffset]) ? createElementFromHTML(columnsThisRow[parseInt(j) + dropCodeColumnOffset].innerHTML.replace("<br>", "\n")).innerText.trim() : null;
       }
       parsedRowList.push(parsedRow);
-      // console.log(parsedRow);
     }
+    console.log("finished reading table!");
     return parsedRowList;
   }
 
@@ -122,11 +127,13 @@ function App() {
    * in the app state
    */
   function getTable() {
+    console.log("requesting data from content script");
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       chrome.tabs.sendMessage(tabs[0].id, { header: "table" }, undefined, function (response) {
         var quarterName = response["quarter"].split("-")[1].trim();
         instructionBegins = QUARTER_DATES[quarterName].instructionBegins;
         instructionEnds = QUARTER_DATES[quarterName].instructionEnds;
+        console.log("received data from content script!");
         populateEvents(readTable(response["table"]));
       });
     });
@@ -201,11 +208,6 @@ function App() {
         endHourMinute['hour'] += 12;
       }
 
-      // // assume that the time is in PM if true
-      // if (startMinute < EARLIEST_START_TIME_MINUTES || pmInString) {
-      //   startMinute += TWELVE_HOURS_IN_MINUTES;
-      //   endMinute += TWELVE_HOURS_IN_MINUTES;
-      // }
       return { startTime: startHourMinute, endTime: endHourMinute };
     }
   }
@@ -265,12 +267,13 @@ function App() {
               },
               uidHelper: (tableRow["sln"] + "_" + i)
             };
-            console.log(event);
             eventList.push(event);
           }
         }
       }
     }
+    console.log("events:");
+    eventList.forEach(event => console.log(event));
     setEvents(eventList);
   }
 
@@ -286,6 +289,7 @@ function App() {
 
   useEffect(() => {
     getTable();
+    // eslint-disable-next-line
   }, []);
 
   const useStyles = makeStyles({
@@ -334,8 +338,8 @@ function App() {
     return events.map(event => <TableRow>
       <TableCell className={classes.tableRow}>{event["subject"]}</TableCell>
       <TableCell className={classes.tableRow} align="right">{event['rrule'].byday.join(', ')}</TableCell>
-      <TableCell className={classes.tableRow} align="right">{event['beginDate'].getHours() + ':' + event['beginDate'].getMinutes()}</TableCell>
-      <TableCell className={classes.tableRow} align="right">{event['endDate'].getHours() + ':' + event['endDate'].getMinutes()}</TableCell>
+      <TableCell className={classes.tableRow} align="right">{event['beginDate'].getHours().toString().padStart(2, '0') + ':' + event['beginDate'].getMinutes().toString().padStart(2, '0')}</TableCell>
+      <TableCell className={classes.tableRow} align="right">{event['endDate'].getHours().toString().padStart(2, '0') + ':' + event['endDate'].getMinutes().toString().padStart(2, '0')}</TableCell>
       <TableCell className={classes.tableRow} align="right">{event["location"]}</TableCell>
     </TableRow>)
   }
