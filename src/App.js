@@ -35,7 +35,15 @@ const QUARTER_DATES = {
   'Spring 2020': {
     instructionBegins: { year: 2020, month: 2, day: 30, hour: 8, minute: 0 },
     instructionEnds: { year: 2020, month: 5, day: 5, hour: 23, minute: 59 }
-  }
+  },
+  'Autumn 2020': {
+    instructionBegins: { year: 2020, month: 8, day: 30, hour: 8, minute: 0 },
+    instructionEnds: { year: 2020, month: 11, day: 11, hour: 23, minute: 59 }
+  },
+  'Fall 2020': {
+    instructionBegins: { year: 2020, month: 8, day: 30, hour: 8, minute: 0 },
+    instructionEnds: { year: 2020, month: 11, day: 11, hour: 23, minute: 59 }
+  },
 };
 
 /**
