@@ -44,6 +44,10 @@ const QUARTER_DATES = {
     instructionBegins: { year: 2020, month: 8, day: 30, hour: 8, minute: 0 },
     instructionEnds: { year: 2020, month: 11, day: 11, hour: 23, minute: 59 }
   },
+  'Winter 2021': {
+    instructionBegins: { year: 2020, month: 0, day: 4, hour: 8, minute: 0 },
+    instructionEnds: { year: 2020, month: 2, day: 12, hour: 23, minute: 59 }
+  },
 };
 
 /**
