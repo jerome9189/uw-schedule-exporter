@@ -1,6 +1,6 @@
 {
   "name": "UW Schedule Exporter",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Extension to read course information from the UW registration page and export it to a .ics file",
   "manifest_version": 2,
   "permissions": [
