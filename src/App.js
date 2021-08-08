@@ -52,6 +52,22 @@ const QUARTER_DATES = {
     instructionBegins: { year: 2021, month: 2, day: 29, hour: 8, minute: 0 },
     instructionEnds: { year: 2021, month: 5, day: 4, hour: 23, minute: 59 }
   },
+  'Autumn 2021': {
+    instructionBegins: { year: 2021, month: 8, day: 29, hour: 8, minute: 0 },
+    instructionEnds: { year: 2021, month: 11, day: 10, hour: 23, minute: 59 }
+  },
+  'Fall 2021': {
+    instructionBegins: { year: 2021, month: 8, day: 29, hour: 8, minute: 0 },
+    instructionEnds: { year: 2021, month: 11, day: 10, hour: 23, minute: 59 }
+  },
+  'Winter 2022': {
+    instructionBegins: { year: 2022, month: 0, day: 3, hour: 8, minute: 0 },
+    instructionEnds: { year: 2021, month: 2, day: 11, hour: 23, minute: 59 }
+  },
+  'Spring 2022': {
+    instructionBegins: { year: 2021, month: 2, day: 28, hour: 8, minute: 0 },
+    instructionEnds: { year: 2021, month: 5, day: 3, hour: 23, minute: 59 }
+  },
 };
 
 /**
