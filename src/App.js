@@ -62,11 +62,11 @@ const QUARTER_DATES = {
   },
   'Winter 2022': {
     instructionBegins: { year: 2022, month: 0, day: 3, hour: 8, minute: 0 },
-    instructionEnds: { year: 2021, month: 2, day: 11, hour: 23, minute: 59 }
+    instructionEnds: { year: 2022, month: 2, day: 11, hour: 23, minute: 59 }
   },
   'Spring 2022': {
-    instructionBegins: { year: 2021, month: 2, day: 28, hour: 8, minute: 0 },
-    instructionEnds: { year: 2021, month: 5, day: 3, hour: 23, minute: 59 }
+    instructionBegins: { year: 2022, month: 2, day: 28, hour: 8, minute: 0 },
+    instructionEnds: { year: 2022, month: 5, day: 3, hour: 23, minute: 59 }
   },
 };
 
