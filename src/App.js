@@ -68,6 +68,18 @@ const QUARTER_DATES = {
     instructionBegins: { year: 2022, month: 2, day: 28, hour: 8, minute: 0 },
     instructionEnds: { year: 2022, month: 5, day: 3, hour: 23, minute: 59 }
   },
+  'Summer 2022': {
+    instructionBegins: { year: 2022, month: 5, day: 21, hour: 8, minute: 0 },
+    instructionEnds: { year: 2022, month: 7, day: 19, hour: 23, minute: 59 }
+  },
+  'Autumn 2022': {
+    instructionBegins: { year: 2022, month: 8, day: 28, hour: 8, minute: 0 },
+    instructionEnds: { year: 2022, month: 11, day: 9, hour: 23, minute: 59 }
+  },
+  'Fall 2022': {
+    instructionBegins: { year: 2022, month: 8, day: 28, hour: 8, minute: 0 },
+    instructionEnds: { year: 2022, month: 11, day: 9, hour: 23, minute: 59 }
+  },
 };
 
 /**
